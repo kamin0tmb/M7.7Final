@@ -6,32 +6,31 @@ namespace M7._7Final
     {
         static void Main(string[] args)
         {
+            Order ord = new Order();
+            Console.WriteLine("Номер заказа {0}", ord.Number);
+            Console.WriteLine("Выберите категорию товаров: 1 - продукты, 2 - другое, 3 - ноутбук");
+            int ngoods = Convert.ToInt32(Console.ReadLine());
+            switch (ngoods)
+            {
+                case 1:
+                    Food good1 = new Food();
+                    good1.allGoods();
+                    break;
+                case 2:
+                    Other good2 = new Other();
+                    good2.allGoods();
+                    break;
+                case 3:
+                    NoteBook noteBook = new NoteBook();
+                    Console.WriteLine("Характеристики ноутбука: {0}", noteBook.NameProduct());
+                    var caseNoteBook = new CaseNoteBook();
+                    var caseShop = caseNoteBook.noteBook.model;
+                    Console.WriteLine("Наименование сумки для ноутбука: {0}", caseNoteBook.ChangeCase(caseShop));
+                    break;
 
 
-            User user = new User();
+            }
 
-
-            Console.WriteLine("Введите своё ФИО");
-            user.fio = Console.ReadLine();
-
-            Console.WriteLine("Введите свой адрес");
-            user.adress = Console.ReadLine();
-
-            Console.WriteLine("Введите свой телефон");
-            user.tel = Console.ReadLine();
-
-            user.InfoUser();
-            Console.WriteLine();
-
-
-            NoteBook noteBook = new NoteBook();
-            Console.WriteLine("Характеристики ноутбука: {0}", noteBook.NameProduct());
-
-            var caseNoteBook = new CaseNoteBook();
-            var caseShop = caseNoteBook.noteBook.model;
-            Console.WriteLine("Наименование сумки для ноутбука: {0}", caseNoteBook.ChangeCase(caseShop));
-
-            Console.WriteLine();
             Console.WriteLine("Выберите доставку: 1 - курьером, 2 - в пункт выдачи, 3 - получить в магазине");
             int nshop = Convert.ToInt32(Console.ReadLine());
 
@@ -41,19 +40,38 @@ namespace M7._7Final
             switch (nshop)
             {
                 case 1:
-                    HomeDelivery deliv1 = new HomeDelivery { Address = user.adress, Number = 123 };
+                    HomeDelivery deliv1 = new HomeDelivery();
                     deliv1.Move();
                     break;
                 case 2:
-                    PickPointDelivery deliv2 = new PickPointDelivery { Number = 123 };
+                    PickPointDelivery deliv2 = new PickPointDelivery();
                     deliv2.Move();
                     break;
                 case 3:
-                    ShopDelivery deliv3 = new ShopDelivery { Number = 123 };
+                    ShopDelivery deliv3 = new ShopDelivery();
                     deliv3.Move();
                     break;
-            }
 
+            }
+            Console.WriteLine("Выберите способ оплаты: 1 - карта, 2 - наличные, 3 - кредит");
+            int npay = Convert.ToInt32(Console.ReadLine());
+            switch (npay)
+            {
+                case 1:
+                    CreditCard pay1 = new CreditCard();
+                    pay1.Pay();
+                    break;
+                case 2:
+                    Cash pay2 = new Cash();
+                    pay2.Pay();
+                    break;
+                case 3:
+                    Credit pay3 = new Credit();
+                    pay3.Pay();
+                    break;
+
+
+            }
 
 
         }
@@ -62,47 +80,168 @@ namespace M7._7Final
     abstract class Delivery
     {
         public string Address;
-        public int Number;
         public abstract void Move();
+        protected DateTime date = DateTime.Now;
+
     }
 
     class HomeDelivery : Delivery
     {
-        private string Courier;
-        public HomeDelivery()
-        {
-            Courier = "'Служба доставки'";
-
-        }
         public override void Move()
         {
-            Console.WriteLine("Заказ {0} будет доставлен по адресу {1} службой {2}", Number, Address, Courier);
+
+            Console.WriteLine("Введите свой адрес");
+            Address = Console.ReadLine();
+            date = base.date.AddDays(4);
+            Console.WriteLine("Доставка будет осуществлена по адресу: {0} в течение 4 дней: {1}", Address, date.ToShortDateString());
+
         }
     }
 
     class PickPointDelivery : Delivery
     {
-        public PickPointDelivery()
-        {
-            Address = "'Пункт выдачи'";
-
-        }
         public override void Move()
         {
-            Console.WriteLine("Заказ {0} будет доставлен в пункт выдачи {1}", Number, Address);
+            Console.WriteLine("Выберите ближайший пункт доставки: 1 - ул. Ивана Брагина, д. 4, 2 - ул. Семена Середы, д. 8, 3 - ул. Светланы Ивановой, д. 41");
+            int nppoint = Convert.ToInt32(Console.ReadLine());
+            switch (nppoint)
+            {
+                case 1:
+                    Address = "ул. Ивана Брагина, д. 4";
+                    break;
+                case 2:
+                    Address = "ул. Семена Середы, д. 8";
+                    break;
+                case 3:
+                    Address = "ул. Светланы Ивановой, д. 41";
+                    break;
+            }
+            date = base.date.AddDays(3);
+            Console.WriteLine("Ваш товар будет доставлен в пункт доставки по адресу: {0} в течение 3 дней: {1}", Address, date.ToShortDateString());
+
         }
     }
+
     class ShopDelivery : Delivery
     {
-        private string Shop;
-        public ShopDelivery()
-        {
-            Shop = "'Магазин'";
-
-        }
         public override void Move()
         {
-            Console.WriteLine("Заказ {0} находится в магазине {1}", Number, Shop);
+
+            Address = "ул. Фестивальная, д. 16";
+            Console.WriteLine("Вы можете забрать подготовленный для вас товар в магазине по адресу: {0}", Address);
+        }
+    }
+
+    class Order
+    { 
+        public int Number = 0;
+
+        public Order()
+        {
+            Number = Counter.Count(Number);
+        }
+    }
+    class Counter
+    
+    {
+    public static int Count(int Number)
+        {
+            Number = Number+1;
+            return Number ;
+        }
+    }
+
+    abstract class Payment
+    {
+        public abstract void Pay();
+    }
+    class CreditCard : Payment
+    {
+        public override void Pay()
+        {
+            Console.WriteLine("Вы выбрали оплату кредитной картой");
+
+        }
+    }
+    class Cash : Payment
+    {
+        public override void Pay()
+        {
+            Console.WriteLine("Вы выбрали оплату наличными");
+        }
+    }
+    class Credit : Payment
+    {
+        public override void Pay()
+        {
+            Console.WriteLine("Вы выбрали оплату через кредит");
+        }
+    }
+
+    abstract class Goods
+    {
+        public string goods;
+        public int numb;
+        public double cost;
+        public abstract void allGoods();
+    }
+
+    class Food : Goods
+    {
+
+        public override void allGoods()
+        {
+
+
+            Console.WriteLine("Выберите необходимый Вам продукт: 1 - Яйца, 2 - Молоко, 3 - Сыр");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Сколько данного вида товара Вам требуется?");
+            numb = Convert.ToInt32(Console.ReadLine());
+            switch (n)
+            {
+                case 1:
+                    goods = "Яйцо";
+                    cost = 25.6 * Convert.ToDouble(numb);
+                    break;
+                case 2:
+                    goods = "Молоко";
+                    cost = 34.1 * Convert.ToDouble(numb);
+                    break;
+                case 3:
+                    goods = "Сыр";
+                    cost = 42.6 * Convert.ToDouble(numb);
+                    break;
+            }
+
+        }
+    }
+
+    class Other : Goods
+    {
+        public override void allGoods()
+        {
+
+
+            Console.WriteLine("Выберите необходимый Вам продукт: 1 - Гвозди, 2 - Молоток, 3 - Ведро");
+            int n = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Сколько данного вида товара Вам требуется?");
+            numb = Convert.ToInt32(Console.ReadLine());
+            switch (n)
+            {
+                case 1:
+                    goods = "Гвоздь";
+                    cost = 25.6 * Convert.ToDouble(numb);
+                    break;
+                case 2:
+                    goods = "Молоток";
+                    cost = 25.6 * Convert.ToDouble(numb);
+                    break;
+                case 3:
+                    goods = "Ведро";
+                    cost = 25.6 * Convert.ToDouble(numb);
+                    break;
+            }
+
         }
     }
 
@@ -175,44 +314,6 @@ namespace M7._7Final
             return "Сумка для данной модели отсутствует в продаже";
         }
     }
-
-
-
-    class Order<TUser, TDelivery, TNoteBook, TCaseNoteBook>
-        where TUser : User
-        where TDelivery : Delivery
-        where TNoteBook : NoteBook
-        where TCaseNoteBook : CaseNoteBook
-    {
-        public TUser User;
-        public TDelivery Delivery;
-        public TNoteBook NoteBook;
-        public TCaseNoteBook CaseNoteBook;
-
-
-
-
-        public void DisplayAddress(TDelivery Delivery)
-        {
-            Console.WriteLine("Адрес доставки" + Delivery);
-        }
-
-        public void DisplayProduct()
-        {
-            Console.WriteLine("Товар: " + NoteBook.NameProduct());
-        }
-
-
-    }
-    public class User
-    {
-        public String fio;
-        public String adress;
-        public String tel;
-        public void InfoUser()
-        {
-            Console.WriteLine("{0} вы зарегистрировались, ваш адрес {1}, ваш телефон {2}", fio, adress, tel);
-        }
-    }
-
 }
+
+
